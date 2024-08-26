@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listas</title>
+    <style>
+         body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background:#000e36;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        .lists {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .list {
+            text-align: center;
+            width: 30%;
+            background-color: #000e36;
+            border: 1px solid #273866;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .list h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+        .list ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .list ul li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+        }
+        .list ul li .item-header {
+            display: flex;
+            justify-content: space-between;
+        }
+        .list ul li .item-name {
+            flex: 1;
+            color: #ffffff;
+        }
+        .list ul li .remove-item, .list ul li .expand-item {
+            color: #f44336;
+            cursor: pointer;
+        }
+        .list ul li .expand-item {
+            color: #2196F3;
+        }
+        .list ul li .item-details {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            color: #ffffff;
+        }
+        .list ul li .item-description {
+            padding: 5px 0;
+        }
+        .list ul li .item-image {
+            max-width: 100%;
+            height: auto;
+        }
+        .add-item-form {
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+        .add-item-input, .add-item-description, .add-item-file {
+            flex: 1;
+            padding: 5px;
+            margin: 5px 0;
+            border: 1px solid #273866;
+            background-color: black;
+            color: #ffffff;
+            border-radius: 3px;
+            text-align: center;
+        }
+        .add-item-button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .add-item-button:hover {
+            background-color: #1e6b22;
+        }
+    </style>
+    <script>
+        function addItem(listId) {
+            var nameId = 'item-name-' + listId;
+            var descId = 'item-description-' + listId;
+            var fileId = 'item-file-' + listId;
+
+            var nameValue = document.getElementById(nameId).value.trim();
+            var descValue = document.getElementById(descId).value.trim();
+            var fileInput = document.getElementById(fileId);
+            var file = fileInput.files[0];
+
+            if (nameValue !== '' && descValue !== '' && file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var imageValue = e.target.result;
+                    var ulId = listId;
+                    var ul = document.getElementById(ulId);
+                    var li = document.createElement('li');
+                    li.innerHTML = `
+                        <div class="item-header">
+                            <span class="item-name">${nameValue}</span> 
+                            <span class="expand-item" onclick="toggleDetails(this)">[Expandir]</span>
+                            <span class="remove-item" onclick="removeItem(this)">[Remover]</span>
+                        </div>
+                        <div class="item-details">
+                            <div class="item-description">${descValue}</div>
+                            <img src="${imageValue}" class="item-image" alt="Item Image">
+                        </div>`;
+                    ul.appendChild(li);
+
+                    document.getElementById(nameId).value = '';
+                    document.getElementById(descId).value = '';
+                    fileInput.value = '';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeItem(element) {
+            var li = element.parentNode.parentNode;
+            var ul = li.parentNode;
+            ul.removeChild(li);
+        }
+
+        function toggleDetails(element) {
+            var details = element.parentNode.nextElementSibling;
+            if (details.style.display === 'none' || details.style.display === '') {
+                details.style.display = 'flex';
+                element.textContent = '[Contrair]';
+            } else {
+                details.style.display = 'none';
+                element.textContent = '[Expandir]';
+            }
+        }
+
+        function handleKeyPress(event, listId) {
+            if (event.key === 'Enter') {
+                addItem(listId);
+                event.preventDefault(); // Evita que o formulário seja enviado (comportamento padrão do Enter em formulários)
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Listas, Listas e Listas!!!</h1>
+    <div class="lists">
+        <div class="list">
+            <h2>Personagens Que Eu Gosto</h2>
+            <ul id="characters-like">
+            </ul>
+            <form id="form-characters-like" class="add-item-form">
+                <input type="text" id="item-name-characters-like" class="add-item-input" placeholder="Adicionar nome">
+                <input type="text" id="item-description-characters-like" class="add-item-input" placeholder="Adicionar descrição">
+                <input type="file" id="item-file-characters-like" class="add-item-file">
+                <button type="button" class="add-item-button" onclick="addItem('characters-like')">Adicionar</button>
+            </form>
+        </div>
+        <div class="list">
+            <h2>Frutas Que Eu Adicionaria Numa Salada De Frutas</h2>
+            <ul id="musica">
+            </ul>
+            <form id="form-musica" class="add-item-form">
+                <input type="text" id="item-name-musica" class="add-item-input" placeholder="Adicionar nome">
+                <input type="text" id="item-description-musica" class="add-item-input" placeholder="Adicionar descrição">
+                <input type="file" id="item-file-musica" class="add-item-file">
+                <button type="button" class="add-item-button" onclick="addItem('musica')">Adicionar</button>
+            </form>
+        </div>
+        <div class="list">
+            <h2>Ideias Para Personagens De Algicosathlon?!</h2>
+            <ul id="colors">
+            </ul>
+            <form id="form-colors" class="add-item-form">
+                <input type="text" id="item-name-colors" class="add-item-input" placeholder="Adicionar nome">
+                <input type="text" id="item-description-colors" class="add-item-input" placeholder="Adicionar descrição">
+                <input type="file" id="item-file-colors" class="add-item-file">
+                <button type="button" class="add-item-button" onclick="addItem('colors')">Adicionar</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
